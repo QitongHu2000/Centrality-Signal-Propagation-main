@@ -113,7 +113,7 @@ def draw_graph(G, x2, value, arrows = None, count=0):
     pos[5]=(3,-0.8)
     pos[6]=(2,-0.8)
     pos[7]=(1.2,-0.8)
-    r1=0.12
+    r1=0.08
     r2=0.11
     for (u,v) in G.edges:
         if(arrows == None):
@@ -152,8 +152,10 @@ def draw_graph(G, x2, value, arrows = None, count=0):
     ax.scatter(pos[source][0],pos[source][1],s=800,c=colors[2],linewidth=2.5,edgecolor='black', zorder=2)
     # nx.draw_networkx(G,pos=pos,ax=ax)
     for i in range(8):
-        print([pos[i][1]+r1,pos[i][1]+x2[i]+r1])
-        ax.plot([pos[i][0],pos[i][0]],[pos[i][1]+r1,pos[i][1]+x2[i]*1.2+r1],linewidth=15,c=colors[0], alpha=0.9)
+        if(x2[i]<1e-10):
+            continue
+        else:
+            ax.vlines(pos[i][0],pos[i][1]+r1,pos[i][1]+x2[i]*2+r1,linewidth=15,color=colors[0], alpha=0.9)
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['right'].set_visible(False)

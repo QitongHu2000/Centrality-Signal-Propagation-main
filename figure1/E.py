@@ -142,7 +142,7 @@ def draw_graph(G, x2, value, arrow = None, count=0):
     pos[5]=(3,-0.8)
     pos[6]=(2,-0.8)
     pos[7]=(1.2,-0.8)
-    r1=0.12
+    r1=0.08
     r2=0.1
     for (u,v) in G.edges:
         if((u,v) != arrow and (v,u) != arrow):
@@ -177,7 +177,10 @@ def draw_graph(G, x2, value, arrow = None, count=0):
     ax.scatter(pos[source][0],pos[source][1],s=800,c=colors[2],linewidth=2.5,edgecolor='black', zorder=2)
     # nx.draw_networkx(G,pos=pos,ax=ax)
     for i in range(8):
-        ax.plot([pos[i][0],pos[i][0]],[pos[i][1]+r1,pos[i][1]+x2[i]*1.2+r1],linewidth=15,c=colors[0], alpha=0.9)
+        if(x2[i]<1e-10):
+            continue
+        else:
+            ax.vlines(pos[i][0],pos[i][1]+r1,pos[i][1]+x2[i]*2+r1,linewidth=15,color=colors[0], alpha=0.9)
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -190,7 +193,7 @@ def draw_graph(G, x2, value, arrow = None, count=0):
         plt.title('Energy decreases '+str(np.round(value*100,2))+'%',fontsize=25)
     plt.ylim([-1,0.25])
     plt.tight_layout()
-    plt.savefig('E_'+str(int(100*B))+'_'+str(count)+'_'+str(source)+'.pdf',dpi=300)
+    plt.savefig('E_'+str(int(100*B))+'_'+str(count)+'_'+str(source)+'.pdf',dpi=300, bbox_inches='tight')
     plt.show()
     
 # A_edge=np.mat(loadmat('../Networks/UCIonline.mat')['A'])
