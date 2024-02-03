@@ -71,7 +71,7 @@ def calculate_weight(G):
     H=G.copy()
     H=nx.DiGraph(H)
     for (u,v) in H.edges:
-        H.edges[u,v]['weight']=np.abs(J1[v,k]*(J1[k,u]/J1[k,k]-J2[k,u]/J2[k,k]))
+        H.edges[u,v]['weight']=np.abs(J3[u,v]*J1[v,k]*(J1[k,u]/J1[k,k]-J2[k,u]/J2[k,k]))
     return H
 
 def create_G():
@@ -108,7 +108,7 @@ eigs=np.linalg.eigh(D_edge)[1]
 xi2=eigs[:,1].T.tolist()[0]
 degrees=np.sum(A_edge,axis=1)
 
-source=3
+source=7
 edges=G_edge.edges
 simulation_indexs=list()
 theory_indexs=list()
@@ -118,7 +118,8 @@ laplace_indexs=list()
 count=0
 x1, x2, value_ori =simulation(A_edge)
 x1=np.mat(x1).T
-J1=np.mat(np.linalg.inv(Jac(A_edge, x1)))
+J3=np.mat(Jac(A_edge, x1))
+J1=np.mat(np.linalg.inv(J3))
 J2=np.mat(J1.T*J1)
 H_edge=calculate_weight(G_edge)
 

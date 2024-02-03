@@ -23,7 +23,7 @@ theory_indexs = load_dict('E_UCIonline_theory_'+str(int(100*B))).tolist()[0]
 
 colors = ['#EECB8E', '#DC8910','#83272E']
 
-fig=plt.figure(figsize=(7.5,6))
+fig=plt.figure(figsize=(6,6))
 ax=fig.add_subplot(111)
 
 # ax.plot(simulation_indexs,simulation_indexs,c=colors[2],linewidth=2.5,linestyle='-', alpha = 0.7)

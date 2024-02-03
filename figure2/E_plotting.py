@@ -18,7 +18,7 @@ def load_dict(name):
         return pickle.load(f)
 
 B=0.8
-source=3
+source=7
 
 simulation_indexs = load_dict('E_simulation_'+str(int(100*B))+'_'+str(source)).tolist()[0]
 theory_indexs = load_dict('E_theory_'+str(int(100*B))+'_'+str(source)).tolist()[0]

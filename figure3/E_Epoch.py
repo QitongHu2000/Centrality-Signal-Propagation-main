@@ -70,7 +70,7 @@ def calculate_weight(G):
     H=G.copy()
     H=nx.DiGraph(H)
     for (u,v) in H.edges:
-        H.edges[u,v]['weight']=np.abs(J1[v,k]*(J1[k,u]/J1[k,k]-J2[k,u]/J2[k,k]))
+        H.edges[u,v]['weight']=np.abs(J3[u,v]*J1[v,k]*(J1[k,u]/J1[k,k]-J2[k,u]/J2[k,k]))
     return H
 
 A_edge=np.mat(loadmat('../Networks/Epoch.mat')['A'])
@@ -100,7 +100,8 @@ for source in sources:
     print(source)
     x1, value_ori =simulation(A_edge)
     x1=np.mat(x1).T
-    J1=np.mat(np.linalg.inv(Jac(A_edge, x1)))
+    J3=np.mat(Jac(A_edge, x1))
+    J1=np.mat(np.linalg.inv(J3))
     J2=np.mat(J1.T*J1)
     H_edge=calculate_weight(G_edge)
     
