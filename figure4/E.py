@@ -183,19 +183,19 @@ for j,(u,v) in enumerate(edges):
 x1, value_ori, xs1, ts1 = simulation(A_edge, B_edge)
 index1=np.where(ts1==t_0)[0][-1]
 x1=xs1[index1,:].tolist()
-value1='Initial State'
+value1='Initial State. Energy :{}'.format(np.round(np.linalg.norm(x1),3))
 draw_graph(G_edge, x1, value1, arrows = None,count=0)
 
 index2=np.where(ts1==(t_0+t_1))[0][-1]
 x2=xs1[index2,:].tolist()
-value2='State when observed'
+value2='State when observed. Energy :{}'.format(np.round(np.linalg.norm(x2),3))
 draw_graph(G_edge, x2, value2, arrows = None,count=1)
 
 index3=np.where(ts1==(t_0+t_1+t_2))[0][-1]
 x3=xs1[index3,:].tolist()
-value3='Restricted'
+value3='Restricted. Energy :{}'.format(np.round(np.linalg.norm(x3),3))
 draw_graph(G_edge, x3, value3, arrows = edges,count=2)
 
 x4, value_ori, xs2, ts2 = simulation(A_edge, A_edge)
-value4='Unrestricted'
+value4='Unrestricted. Energy :{}'.format(np.round(np.linalg.norm(x4),3))
 draw_graph(G_edge, x4, value4, arrows = None,count=3)
