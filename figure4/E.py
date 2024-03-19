@@ -76,6 +76,58 @@ def simulation(A, A1):
     Deltax=[i-j for (i,j) in zip(x1,x2)]
     return x2, np.linalg.norm(Deltax), xs, ts
 
+def simulation2(A):
+    def F(A,x):
+        return np.mat(-B*x+alpha*np.multiply(1-x,A*x))
+        # return np.mat(-B*np.multiply(1-x,x)+np.multiply(x,A*(1-1/x)))
+    
+    def Fun(t,x):
+        x=np.mat(x).T
+        dx=F(A,x).tolist()
+        dx=[dx[i][0] for i in range(len(dx))]
+        return dx
+    
+    def Fun_1(t,x,source):
+        x=np.mat(x).T
+        dx=F(A,x).tolist()
+        dx=[dx[i][0] for i in range(len(dx))]
+        dx[source]=0
+        return dx
+    
+    def sim_first(A):
+        x_0=np.zeros(np.shape(A)[0])
+        sol=solve_ivp(Fun, [0,t_0], x_0, rtol=1e-15, atol=1e-15) #odeint(Fun,x_0,t,args=(A,a,b))
+        xs=sol.y.T
+        t=sol.t
+        x=xs[-1,:].tolist()
+        return x, t[-1]
+    
+    def sim_second(A,x,t_0,source):
+        x[source]+=gamma
+        sol=solve_ivp(Fun_1, [t_0,t_0+t_1], x, rtol=1e-15, atol=1e-15, args=(source,))#odeint(Fun_1,x,t,args=(A,a,b,source),atol=1e-13,rtol=1e-13)
+        xs=sol.y.T
+        x=xs[-1,:].tolist()
+        return x
+    
+    x1,t=sim_first(A)
+    x2=sim_second(A,x1.copy(),t,source)
+    Deltax=[i-j for (i,j) in zip(x1,x2)]
+    return x1, x2, np.linalg.norm(Deltax)
+
+def Jac(A,x):
+    J_=np.diag((-B/(1-x)).T.tolist()[0])
+    S_=np.diag((1-x).T.tolist()[0])
+    T_=alpha
+    return np.mat(J_+S_*A*T_)
+
+def calculate_weight(G):
+    k=source
+    H=G.copy()
+    H=nx.DiGraph(H)
+    for (u,v) in H.edges:
+        H.edges[u,v]['weight']=np.abs(J3[u,v]*J1[v,k]*(J1[k,u]/J1[k,k]-J2[k,u]/J2[k,k]))
+    return H
+
 def create_G():
     G=nx.Graph()
     G.add_node(0)
@@ -171,16 +223,75 @@ def draw_graph(G, x2, value, arrows = None, count=0):
 # A_edge=np.mat(loadmat('../Networks/UCIonline.mat')['A'])
 G_edge=create_G()
 A_edge=nx.to_numpy_matrix(G_edge)
+D_edge=nx.laplacian_matrix(G_edge).todense()
+G_edge=G_edge.copy()
+G_edge=nx.DiGraph(G_edge)
+eigs=np.linalg.eigh(D_edge)[1]
+xi2=eigs[:,1].T.tolist()[0]
 degrees=np.sum(A_edge,axis=1)
 
 source=7
-edges=[(5,6),(3,6)]
+edges=G_edge.edges
+
+count=0
+x1, x2, value_ori =simulation2(A_edge)
+x1=np.mat(x1).T
+J3=np.mat(Jac(A_edge, x1))
+J1=np.mat(np.linalg.inv(J3))
+J2=np.mat(J1.T*J1)
+H_edge=calculate_weight(G_edge)
 
 epsilon=1
-for j,(u,v) in enumerate(edges):
+theory_index=dict()
+degree_index=dict()
+laplace_index=dict()
+
+for u,v in edges:
+    theory_index[(u,v)]=H_edge.edges[u,v]['weight']
+    print('type1', (u,v), (H_edge.edges[u,v]['weight']))
+
+for u,v in edges:
+    laplace_index[(u,v)]=(xi2[u]-xi2[v])**2
+    print('type2', (u,v), (xi2[u]-xi2[v])**2)
+
+for u,v in edges:
+    degree_index[(u,v)]=(degrees[u,0]*degrees[v,0])/np.sum(degrees)
+    print('type3', (u,v), (degrees[u,0]*degrees[v,0])/np.sum(degrees))
+
+indexs=np.argsort(list(theory_index.values()))[::-1]
+theory_keys=list(theory_index.keys())
+laplace_keys=list(laplace_index.keys())
+degree_keys=list(degree_index.keys())
+edge_index=[theory_keys[i] for i in indexs]
+theory_index=[np.round(theory_index[theory_keys[i]],3) for i in indexs]
+laplace_index=[np.round(laplace_index[laplace_keys[i]],3) for i in indexs]
+degree_index=[np.round(degree_index[degree_keys[i]],3) for i in indexs]
+print(edge_index)
+print(theory_index)
+print(laplace_index)
+print(degree_index)
+
+source=7
+edges_ours=[(2,3),(3,6)]
+edges_laplacian=[(0,2),(1,2)]
+edges_degree=[(3,2),(6,3)]
+
+epsilon=1
+for j,(u,v) in enumerate(edges_ours):
     B_edge=A_edge.copy()
     B_edge[u,v]-=epsilon
 x1, value_ori, xs1, ts1 = simulation(A_edge, B_edge)
+
+for j,(u,v) in enumerate(edges_laplacian):
+    C_edge=A_edge.copy()
+    C_edge[u,v]-=epsilon
+x5, value_ori, xs5, ts5 = simulation(A_edge, C_edge)
+
+for j,(u,v) in enumerate(edges_degree):
+    D_edge=A_edge.copy()
+    D_edge[u,v]-=epsilon
+x6, value_ori, xs6, ts6 = simulation(A_edge, D_edge)
+
 index1=np.where(ts1==t_0)[0][-1]
 x1=xs1[index1,:].tolist()
 value1='Initial State. Energy :{}'.format(np.round(np.linalg.norm(x1),3))
@@ -193,9 +304,19 @@ draw_graph(G_edge, x2, value2, arrows = None,count=1)
 
 index3=np.where(ts1==(t_0+t_1+t_2))[0][-1]
 x3=xs1[index3,:].tolist()
-value3='Restricted. Energy :{}'.format(np.round(np.linalg.norm(x3),3))
-draw_graph(G_edge, x3, value3, arrows = edges,count=2)
+value3='Restricted by our centrality. Energy :{}'.format(np.round(np.linalg.norm(x3),3))
+draw_graph(G_edge, x3, value3, arrows = edges_ours,count=2)
 
 x4, value_ori, xs2, ts2 = simulation(A_edge, A_edge)
 value4='Unrestricted. Energy :{}'.format(np.round(np.linalg.norm(x4),3))
 draw_graph(G_edge, x4, value4, arrows = None,count=3)
+
+index5=np.where(ts5==(t_0+t_1+t_2))[0][-1]
+x5=xs5[index5,:].tolist()
+value5='Restricted by laplacian centrality. Energy :{}'.format(np.round(np.linalg.norm(x5),3))
+draw_graph(G_edge, x5, value5, arrows = edges_laplacian,count=4)
+
+index6=np.where(ts6==(t_0+t_1+t_2))[0][-1]
+x6=xs6[index6,:].tolist()
+value6='Restricted by degree centrality. Energy :{}'.format(np.round(np.linalg.norm(x6),3))
+draw_graph(G_edge, x6, value6, arrows = edges_degree,count=5)
