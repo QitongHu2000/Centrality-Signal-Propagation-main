@@ -108,7 +108,7 @@ eigs=np.linalg.eigh(D_edge)[1]
 xi2=eigs[:,1].T.tolist()[0]
 degrees=np.sum(A_edge,axis=1)
 
-source=7
+source=3
 edges=G_edge.edges
 simulation_indexs=list()
 theory_indexs=list()
@@ -135,7 +135,7 @@ for u,v in edges:
     error=np.abs((value_per-value_ori)/value_ori)
     error=np.round(error,3)
     print('type1',(u,v),np.abs((value_per-value_ori)/epsilon*value_ori))
-    simulation_index.append(np.abs((value_per-value_ori)/(epsilon*value_ori)))
+    simulation_index.append(np.abs(value_per-value_ori))
 
 for u,v in edges:
     theory_index.append(H_edge.edges[u,v]['weight'])

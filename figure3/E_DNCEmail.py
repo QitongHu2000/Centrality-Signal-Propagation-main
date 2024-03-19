@@ -112,7 +112,7 @@ for source in sources:
         B_edge=A_edge.copy()
         B_edge[u,v]=0
         _, value_per = simulation(B_edge)
-        simulation_index.append(np.abs((value_per-value_ori)/value_ori))
+        simulation_index.append(np.abs(value_per-value_ori))
     
     for u,v in edges:
         theory_index.append(H_edge.edges[u,v]['weight'])

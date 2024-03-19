@@ -23,7 +23,7 @@ theory_indexs = load_dict('E_DNCEmail_theory_'+str(int(100*B))).tolist()[0]
 
 colors = ['#EECB8E', '#DC8910','#83272E']
 
-fig=plt.figure(figsize=(6,6))
+fig=plt.figure(figsize=(6.5,6))
 ax=fig.add_subplot(111)
 
 # ax.plot(simulation_indexs,simulation_indexs,c=colors[2],linewidth=2.5,linestyle='-', alpha = 0.7)
@@ -43,8 +43,8 @@ ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 plt.xticks(fontsize=35)
 plt.yticks(fontsize=35)
-plt.xlabel("Theory",fontsize=35)
-plt.ylabel("Simulation",fontsize=35)
+plt.xlabel(r"$\mathcal{S}(m,E)$",fontsize=35)
+plt.ylabel(r"$\Delta \mathcal{E}(m,E)$",fontsize=35)
 # plt.title('DNCEmail',fontsize=40)
 # plt.legend(fontsize=20,loc=1,bbox_to_anchor=(1.6,1))
 plt.tight_layout()
