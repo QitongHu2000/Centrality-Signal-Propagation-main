@@ -152,7 +152,7 @@ B_edge=A_edge.copy()
 for (k,i) in enumerate(our_selected):
     u,v=edges_list[i]
     print('our',k,u,v)
-    B_edge[u,v]=0
+    B_edge[u,v]=2
     _, value_per, xs_our, ts_our = simulation(A_edge, B_edge)
     our_simulation.append(value_per)
 
@@ -160,7 +160,7 @@ B_edge=A_edge.copy()
 for (k,i) in enumerate(degree_selected):
     u,v=edges_list[i]
     print('degree',k,u,v)
-    B_edge[u,v]=0
+    B_edge[u,v]=2
     _, value_per, xs_degree, ts_degree = simulation(A_edge, B_edge)
     degree_simulation.append(value_per)
 
@@ -168,7 +168,7 @@ B_edge=A_edge.copy()
 for (k,i) in enumerate(laplacian_selected):
     u,v=edges_list[i]
     print('laplacian',k,u,v)
-    B_edge[u,v]=0
+    B_edge[u,v]=2
     _, value_per, xs_laplacian, ts_laplacian = simulation(A_edge, B_edge)
     laplacian_simulation.append(value_per)
     

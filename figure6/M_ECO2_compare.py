@@ -117,7 +117,7 @@ for source in sources:
     for u,v in edges:
         print(source, (u,v))
         B_edge=A_edge.copy()
-        B_edge[u,v]=0
+        B_edge[u,v]=2
         _, value_per = simulation(B_edge)
         simulation_index.append(np.abs((value_per-value_ori)/value_ori))
     
