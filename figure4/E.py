@@ -175,6 +175,9 @@ def draw_graph(G, x2, value, arrows = None, count=0):
                 ax.plot([pos[u][0],pos[v][0]], [pos[u][1], pos[v][1]], linewidth=2.5, color='black', zorder=1, alpha=0.75)
     theta=0
     if(arrows != None):
+        flag=True
+        if(arrows[0][0]==arrows[1][1] and arrows[0][1]==arrows[1][0]):
+            flag=False
         for arrow in arrows:
             p,q=arrow
             x_1,y_1=pos[p]
@@ -197,7 +200,8 @@ def draw_graph(G, x2, value, arrows = None, count=0):
                                 theta = np.pi/2
                             else:
                                 theta = -np.pi/2
-            ax.arrow(pos[p][0], pos[p][1], pos[q][0]-pos[p][0]-r2*np.cos(theta), pos[q][1]-pos[p][1]-r2*np.sin(theta), linewidth=2.5, color = colors[1], alpha=0.75, length_includes_head=True, head_width=0.1,shape='full')
+            if(flag):
+                ax.arrow(pos[p][0], pos[p][1], pos[q][0]-pos[p][0]-r2*np.cos(theta), pos[q][1]-pos[p][1]-r2*np.sin(theta), linewidth=2.5, color = colors[1], alpha=0.75, length_includes_head=True, head_width=0.1,shape='full')
     for i in range(len(pos)):
         if(i!=source):
             ax.scatter(pos[i][0],pos[i][1],s=800,c=colors[1],linewidth=2.5,edgecolor='black', zorder=2)
@@ -273,7 +277,7 @@ print(degree_index)
 
 source=7
 edges_ours=[(2,3),(3,6)]
-edges_laplacian=[(0,2),(1,2)]
+edges_laplacian=[(2,3),(3,2)]
 edges_degree=[(3,2),(6,3)]
 
 epsilon=1
